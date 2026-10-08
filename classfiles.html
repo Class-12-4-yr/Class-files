@@ -94,7 +94,7 @@ function authUI(mode='in'){
 $('#root').innerHTML=`<div class="auth"><h2>📚 ملفات الفصل</h2><div class="tabs"><button class="btn ${mode==='in'?'':'s'}" data-a="auth" data-v="in">دخول</button><button class="btn ${mode==='up'?'':'s'}" data-a="auth" data-v="up">حساب جديد</button><button class="btn ${mode==='fg'?'':'s'}" data-a="auth" data-v="fg">نسيت الباسورد</button></div>
 <form id="af">${mode==='up'?'<input name="name" placeholder="الاسم الكامل" required>':''}<input name="email" type="email" placeholder="الإيميل" required>${mode!=='fg'?'<input name="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" minlength="6" required>':''}<button class="btn">${{in:'دخول',up:'إنشاء حساب',fg:'ابعت رابط الاسترجاع'}[mode]}</button></form><div id="msg"></div></div>`;
 $('#af').onsubmit=async e=>{e.preventDefault();const f=Object.fromEntries(new FormData(e.target)),m=$('#msg');m.textContent='⏳';let r;
-const T={'Invalid login credentials':'الإيميل أو كلمة المرور غلط','Email not confirmed':'لازم تأكد إيميلك الأول (شوف الـ Spam)','User already registered':'الإيميل ده مسجل قبل كده، جرّب دخول'};m.textContent='❌ '+(T[r.error.message]||r.error.message)}}
+if(mode==='in'){r=await sb.auth.signInWithPassword({email:f.email.trim().toLowerCase(),password:f.pw});if(!r.error)return boot()}
 else if(mode==='up'){r=await sb.auth.signUp({email:f.email,password:f.pw,options:{data:{full_name:f.name}}});if(!r.error){m.textContent='تم إنشاء الحساب ✅ استنى موافقة الأدمن (وشوف إيميلك لو طلب تأكيد).';return}}
 else{r=await sb.auth.resetPasswordForEmail(f.email,{redirectTo:location.origin+location.pathname});if(!r.error){m.textContent='لو الإيميل مسجل هيوصلك رابط الاسترجاع.';return}}
 m.textContent='❌ '+r.error.message}}
