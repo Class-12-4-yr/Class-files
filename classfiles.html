@@ -108,8 +108,7 @@ S.u=session.user;
 if(RECOVERY)return recoverUI();
 const{data:p,error:pe}=await sb.from('profiles').select('*').eq('id',S.u.id).maybeSingle();S.p=p;S.pe=pe;
 if(!p||p.status!=='approved')return waitUI();
-S.mine=new Set((await q(sb.from('editor_subjects').select('subject_id').eq('user_id',S.u.id))).map(x=>x.subject_id));
-S.fav=new Set((await q(sb.from('favorites').select('node_id'))).map(x=>x.node_id));
+const[em,fv]=await Promise.all([q(sb.from('editor_subjects').select('subject_id').eq('user_id',S.u.id)),q(sb.from('favorites').select('node_id'))]);S.mine=new Set(em.map(x=>x.subject_id));S.fav=new Set(fv.map(x=>x.node_id));
 shell();
 const h=location.hash.match(/n=([0-9a-f-]{36})/);
 if(h){history.replaceState(null,'',location.pathname);return openById(h[1])}
